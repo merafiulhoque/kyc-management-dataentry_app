@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KYC Data Entry — Amtala SO || SOL 74212101</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'Poppins', Arial;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    transition: background 0.3s, color 0.3s;
+    color: white;
+  }
+
+  body.light {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #222;
+  }
+
+  .wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  body.light .container {
+    background: rgba(255, 255, 255, 0.95);
+    color: #222;
+    border: 1px solid rgba(100, 100, 100, 0.1);
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .theme-toggle {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+
+  body.light .theme-toggle {
+    background: #333;
+    color: white;
+  }
+
+  .theme-toggle:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.05);
+  }
+
+  .input-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 768px) {
+  .input-section {
+    grid-template-columns: 1fr;
+  }
+}
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .form-group label {
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.9;
+  }
+
+  input {
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    font-size: 14px;
+    font-family: 'Poppins', Arial;
+    transition: all 0.3s;
+    color: #222;
+  }
+
+  input:focus {
+    outline: none;
+    border-color: #ffd369;
+    box-shadow: 0 0 0 4px rgba(255, 211, 105, 0.2);
+    background: white;
+  }
+
+  body.light input {
+    background: #f8f9fa;
+    color: #222;
+  }
+
+  .action-group {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  button {
+    padding: 11px 18px;
+    border-radius: 10px;
+    border: none;
+    background: #ffd369;
+    color: #222;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 15px rgba(255, 211, 105, 0.3);
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 211, 105, 0.4);
+  }
+
+  button:active {
+    transform: translateY(0);
+  }
+
+  .search-section {
+    margin-bottom: 20px;
+  }
+
+  .search-section input {
+    width: 100%;
+  }
+
+  .stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px 15px;
+    border-radius: 8px;
+  }
+
+  .stat-number {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  .table-section {
+    margin-bottom: 20px;
+  }
+
+  .table-wrap {
+    max-height: 500px;
+    overflow-y: auto;
+    border-radius: 12px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    color: #222;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  th {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 15px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  td {
+    padding: 14px 15px;
+    border-bottom: 1px solid #eee;
+    font-size: 14px;
+  }
+
+  tbody tr {
+    transition: all 0.2s;
+  }
+
+  tbody tr:hover {
+    background: #f8f9fa;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #f5f5f5;
+  }
+
+  tbody tr:nth-child(even):hover {
+    background: #efefef;
+  }
+
+  .action-cell {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .action-btn {
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  .edit {
+    background: #4caf50;
+    color: white;
+  }
+
+  .edit:hover {
+    background: #45a049;
+    transform: scale(1.05);
+  }
+
+  .delete {
+    background: #e53935;
+    color: white;
+  }
+
+  .delete:hover {
+    background: #d32f2f;
+    transform: scale(1.05);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: #999;
+  }
+
+  .empty-state svg {
+    width: 80px;
+    height: 80px;
+    margin-bottom: 20px;
+    opacity: 0.5;
+  }
+
+  .pagination-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-top: 20px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+  }
+
+  .pagination-controls {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .pagination-controls button {
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .page-info {
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  select {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.9);
+    color: #222;
+    font-family: 'Poppins', Arial;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: #ffd369;
+  }
+
+  body.light select {
+    background: #f8f9fa;
+  }
+
+  .edit-mode {
+    background: rgba(255, 211, 105, 0.2) !important;
+    border: 2px solid #ffd369 !important;
+  }
+
+  .toast {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #333;
+    color: white;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease, slideOut 0.3s ease 2.7s;
+    z-index: 1000;
+  }
+
+  @keyframes slideIn {
+    from {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOut {
+    from {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    to {
+      transform: translateX(400px);
+      opacity: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .container {
+      padding: 20px;
+    }
+
+    .header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: 22px;
+    }
+
+    .input-section {
+      grid-template-columns: 1fr;
+    }
+
+    .action-group {
+      flex-direction: column;
+    }
+
+    .action-group button {
+      width: 100%;
+    }
+
+    .table-wrap {
+      max-height: 400px;
+    }
+
+    th, td {
+      padding: 10px;
+      font-size: 12px;
+    }
+
+    .action-cell {
+      flex-direction: column;
+    }
+
+    .action-btn {
+      width: 100%;
+    }
+
+    .pagination-section {
+      flex-direction: column;
+    }
+
+    .pagination-controls {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .stats {
+      justify-content: space-around;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 15px;
+    }
+
+    .header h1 {
+      font-size: 18px;
+    }
+
+    input, button {
+      font-size: 12px;
+      padding: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      font-size: 11px;
+    }
+
+    .toast {
+      left: 10px;
+      right: 10px;
+      bottom: 10px;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+<div class="container">
+
+  <div class="header">
+    <h1>📊 KYC Data Entry</h1>
+    <button class="theme-toggle" onclick="toggleTheme()">🌙 Dark/Light</button>
+  </div>
+
+  <div class="input-section">
+    <div class="form-group">
+      <label for="cif">CIF No</label>
+      <input id="cif" type="text" placeholder="Enter CIF number" inputmode="numeric">
+    </div>
+    <div class="form-group">
+      <label for="account">Account No</label>
+      <input id="account" type="text" placeholder="Enter account number" inputmode="numeric">
+    </div>
+    <div class="form-group">
+      <label for="name">Name</label>
+      <input id="name" type="text" placeholder="Enter customer name" inputmode="text">
+    </div>
+  </div>
+
+  <div class="action-group">
+    <button onclick="addRecord()">💾 Save (Enter)</button>
+    <button onclick="exportXLSX()">📥 Export Excel</button>
+    <button onclick="exportPDF()">📄 Export PDF</button>
+    <button onclick="clearAll()">🗑️ Clear All</button>
+  </div>
+
+  <div class="search-section">
+    <input id="search" type="text" placeholder="🔍 Search by CIF, Account, or Name...">
+  </div>
+
+  <div class="stats">
+    <div class="stat-item">
+      <span>📌 Total Records:</span>
+      <span class="stat-number" id="totalCount">0</span>
+    </div>
+    <div class="stat-item">
+      <span>🔍 Filtered Results:</span>
+      <span class="stat-number" id="filteredCount">0</span>
+    </div>
+    <div class="stat-item">
+      <span id="editStatus" style="font-size: 14px; font-weight: 600;"></span>
+    </div>
+  </div>
+
+  <div class="table-section">
+    <div class="table-wrap">
+      <table id="dataTable">
+        <thead>
+          <tr>
+            <th>SL No</th>
+            <th>CIF</th>
+            <th>Account</th>
+            <th>Name</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="pagination-section">
+    <div class="pagination-controls">
+      <button onclick="prevPage()">← Prev</button>
+      <span class="page-info" id="pageInfo">Page 1</span>
+      <button onclick="nextPage()">Next →</button>
+    </div>
+    <div class="pagination-controls">
+      <label for="pageSize" style="font-weight: 600; white-space: nowrap;">Rows per page:</label>
+      <select id="pageSize" onchange="changePageSize(this.value)">
+        <option value="10">10</option>
+        <option value="25">25</option>
+        <option value="50">50</option>
+      </select>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.28/dist/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+  let data = JSON.parse(localStorage.getItem("customerData") || "[]");
+  let editIndex = null;
+  let page = 1;
+  let size = 10;
+
+  const cif = document.getElementById("cif");
+  const account = document.getElementById("account");
+  const nameField = document.getElementById("name");
+  const search = document.getElementById("search");
+  const editStatus = document.getElementById("editStatus");
+
+  nameField.addEventListener("input", () => {
+    nameField.value = nameField.value.toUpperCase();
+  });
+
+  cif.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); account.focus(); }
+  });
+
+  account.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); nameField.focus(); }
+  });
+
+  nameField.addEventListener("keydown", e => {
+    if (e.key === "Enter") { e.preventDefault(); addRecord(); }
+  });
+
+  document.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "s") {
+      e.preventDefault(); addRecord();
+    }
+    if ((e.ctrlKey || e.metaKey) && e.key === "e") {
+      e.preventDefault(); exportXLSX();
+    }
+  });
+
+  search.addEventListener("input", () => { page = 1; renderTable(); });
+
+  function showToast(msg) {
+    const t = document.createElement("div");
+    t.className = "toast"; t.innerText = msg; t.style.backgroundColor = "green"
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 5000);
+  }
+
+  function validate(c, a, n) {
+    if (!c.trim()) return "CIF cannot be empty";
+    if (!a.trim()) return "Account cannot be empty";
+    if (!n.trim()) return "Name cannot be empty";
+    if (!/^[0-9]+$/.test(c)) return "CIF must be numeric";
+    if (!/^[0-9]+$/.test(a)) return "Account must be numeric";
+    if (!/^[A-Z ]+$/.test(n)) return "Name must contain only letters/spaces";
+    return null;
+  }
+
+  function isDuplicate(c, a, i = null) {
+    return data.some((r, idx) => idx !== i && r.cif === c && r.account === a);
+  }
+
+  function addRecord() {
+    const c = cif.value.trim();
+    const a = account.value.trim();
+    const n = nameField.value.trim().toUpperCase();
+
+    let err = validate(c, a, n);
+    if (err) return alert(err);
+
+    if (isDuplicate(c, a, editIndex)) return alert("Duplicate CIF + Account not allowed");
+
+    if (editIndex !== null) {
+      data[editIndex] = { cif: c, account: a, name: n };
+      editIndex = null;
+      editStatus.textContent = "";
+      showToast("Record Updated");
+    } else {
+      data.push({ cif: c, account: a, name: n });
+      showToast("Record Added");
+    }
+
+    localStorage.setItem("customerData", JSON.stringify(data));
+
+    cif.value = account.value = nameField.value = "";
+    cif.focus();
+    page = 1;
+    renderTable();
+  }
+
+  function editRow(i) {
+    if (!confirm("Edit this record?")) return;
+    editIndex = i;
+    cif.value = data[i].cif;
+    account.value = data[i].account;
+    nameField.value = data[i].name;
+    editStatus.textContent = "Editing mode — press Enter to save";
+    nameField.focus();
+  }
+
+  function deleteRow(i) {
+    if (!confirm("Delete this record?")) return;
+    data.splice(i, 1);
+    localStorage.setItem("customerData", JSON.stringify(data));
+    showToast("Record Deleted");
+    renderTable();
+  }
+
+  function clearAll() {
+    if (!confirm("Delete ALL data?")) return;
+    data = [];
+    localStorage.removeItem("customerData");
+    renderTable();
+  }
+
+  function filtered() {
+    let q = search.value.toUpperCase();
+    return data.filter(r =>
+      r.cif.includes(q) || r.account.includes(q) || r.name.includes(q)
+    );
+  }
+
+  function renderTable() {
+    let rows = filtered();
+    let start = (page - 1) * size;
+    let show = rows.slice(start, start + size);
+
+    const tbody = document.querySelector("#dataTable tbody");
+    tbody.innerHTML = "";
+
+    if (!show.length) {
+      tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:25px;">No records</td></tr>`;
+    } else {
+      show.forEach((r, i) => {
+        let tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${start + i + 1}</td>
+          <td>${r.cif}</td>
+          <td>${r.account}</td>
+          <td>${r.name}</td>
+          <td>
+            <button onclick="editRow(${data.indexOf(r)})">Edit</button>
+            <button onclick="deleteRow(${data.indexOf(r)})">Delete</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    document.getElementById("totalCount").textContent = data.length;
+    document.getElementById("filteredCount").textContent = rows.length;
+    document.getElementById("pageInfo").innerText =
+      `Page ${page} of ${Math.max(1, Math.ceil(rows.length / size))}`;
+  }
+
+  function nextPage() {
+    if (page < Math.ceil(filtered().length / size)) { page++; renderTable(); }
+  }
+
+  function prevPage() {
+    if (page > 1) { page--; renderTable(); }
+  }
+
+  function changePageSize(v) {
+    size = parseInt(v);
+    page = 1;
+    renderTable();
+  }
+
+  function formatDateToDDMMYYYY(date) {
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}${month}${year}`;
+  }
+
+  function exportXLSX() {
+    if (!data.length) return alert("No data");
+    const aoa = [
+      ["AMTALA SO   ||   SOLID: 74212101   ||   KYC DATA"],
+      ["SL", "CIF", "Account", "Name"],
+      ...data.map((r, i) => [i + 1, r.cif, r.account, r.name])
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    const wb = XLSX.utils.book_new();
+    const date = new Date()
+    const ddmmyyyy = formatDateToDDMMYYYY(date)
+    XLSX.utils.book_append_sheet(wb, ws, `KYC Data`);
+    XLSX.writeFile(wb, `kyc_data_${ddmmyyyy}.xlsx`);
+    showToast("Excel Exported");
+  }
+
+  async function exportPDF() {
+    if (!data.length) return alert("No data");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    const date = new Date()
+    const ddmmyyyy = formatDateToDDMMYYYY(date)
+    doc.setFontSize(16);
+    doc.text("AMTALA SO   ||   SOLID: 74212101   ||   KYC DATA", 16, 18);
+
+    doc.autoTable({
+      startY: 22,
+      head: [["SL", "CIF", "Account", "Name"]],
+      body: data.map((r, i) => [i + 1, r.cif, r.account, r.name]),
+      styles: { fontSize: 10 }
+    });
+
+    doc.save(`kyc_data_${ddmmyyyy}.pdf`);
+    showToast("PDF Exported");
+  }
+
+  window.onload = () => { renderTable(); cif.focus(); };
+
+  function toggleTheme() {
+  document.body.classList.toggle("light");
+
+  // save mode
+  if (document.body.classList.contains("light")) {
+    localStorage.setItem("theme", "light");
+    showToast("Light Mode Enabled");
+  } else {
+    localStorage.setItem("theme", "dark");
+    showToast("Dark Mode Enabled");
+  }
+}
+</script>
+
+
+
+</body>
+</html>
